@@ -3,6 +3,7 @@ body, html {
     padding: 0;
     overflow: hidden;
     font-family: Arial, sans-serif;
+    cursor: none;
 }
 
 #canvas-container {
@@ -11,4 +12,5 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: none;
 }

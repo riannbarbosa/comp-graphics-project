@@ -1,4 +1,3 @@
-// Criação da cena, câmera e renderizador
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -68,7 +67,6 @@ ceiling.rotation.x = Math.PI / 2;
 ceiling.position.y = 5;
 scene.add(ceiling);
 
-
 const galleryGroup = new THREE.Group();
 scene.add(galleryGroup);
 
@@ -124,10 +122,10 @@ function createSign(text) {
     context.font = '20px Arial';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    
+
     const lines = text.split('\n');
     const lineHeight = 30;
-    
+
     for (let i = 0; i < lines.length; i++) {
         context.fillText(lines[i], canvas.width / 2, (canvas.height / 2) + (i - lines.length / 2) * lineHeight);
     }
@@ -136,7 +134,7 @@ function createSign(text) {
     const signMaterial = new THREE.MeshBasicMaterial({ map: signTexture, side: THREE.DoubleSide });
     const sign = new THREE.Mesh(signGeometry, signMaterial);
     sign.position.set(0, 1.75, 0.1);
-    
+
     sign.rotation.y = Math.PI / 8;
 
     group.add(sign);
@@ -181,7 +179,7 @@ paintingPositions.forEach((pos, index) => {
 camera.position.set(0, 1.6, 5);
 
 const moveSpeed = 0.05;
-const lookSpeed = 0.01;
+const lookSpeed = 0.000005;
 
 let moveForward = false;    
 let moveBackward = false;
@@ -200,13 +198,31 @@ const limits = {
     maxZ: 9
 };
 
+function requestPointerLock() {
+    document.body.requestPointerLock = document.body.requestPointerLock ||
+                                      document.body.mozRequestPointerLock ||
+                                      document.body.webkitRequestPointerLock;
+
+    document.body.requestPointerLock();
+}
+
+document.addEventListener('pointerlockchange', function() {
+    if (document.pointerLockElement === document.body) {
+        console.log('Pointer locked');
+    } else {
+        console.log('Pointer unlocked');
+    }
+});
+
+window.addEventListener('click', requestPointerLock);
+
 window.addEventListener('keydown', function(event) {
     switch (event.key) {
         case 'w':
-            moveBackward = true;
+            moveForward = true;
             break;
         case 's':
-            moveForward = true;
+            moveBackward = true;
             break;
         case 'a':
             moveLeft = true;
@@ -220,10 +236,10 @@ window.addEventListener('keydown', function(event) {
 window.addEventListener('keyup', function(event) {
     switch (event.key) {
         case 'w':
-            moveBackward = false;
+            moveForward = false;
             break;
         case 's':
-            moveForward = false;
+            moveBackward = false;
             break;
         case 'a':
             moveLeft = false;
@@ -234,56 +250,44 @@ window.addEventListener('keyup', function(event) {
     }
 });
 
-window.addEventListener('mousemove', (event) => {
-    const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-    const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
-
-    yaw -= (mouseX * lookSpeed);
-    pitch -= (mouseY * lookSpeed);
-    pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
-});
-
 function animate() {
     requestAnimationFrame(animate);
 
-    let newX = camera.position.x;
-    let newZ = camera.position.z;
-
     if (moveForward) {
-        newX += Math.sin(yaw) * moveSpeed;
-        newZ += Math.cos(yaw) * moveSpeed;
+        camera.position.z -= moveSpeed * Math.cos(yaw);
+        camera.position.x -= moveSpeed * Math.sin(yaw);
     }
     if (moveBackward) {
-        newX -= Math.sin(yaw) * moveSpeed;
-        newZ -= Math.cos(yaw) * moveSpeed;
+        camera.position.z += moveSpeed * Math.cos(yaw);
+        camera.position.x += moveSpeed * Math.sin(yaw);
     }
     if (moveLeft) {
-        newX -= Math.cos(yaw) * moveSpeed;
-        newZ += Math.sin(yaw) * moveSpeed;
+        camera.position.x -= moveSpeed * Math.cos(yaw);
+        camera.position.z += moveSpeed * Math.sin(yaw);
     }
     if (moveRight) {
-        newX += Math.cos(yaw) * moveSpeed;
-        newZ -= Math.sin(yaw) * moveSpeed;
+        camera.position.x += moveSpeed * Math.cos(yaw);
+        camera.position.z -= moveSpeed * Math.sin(yaw);
     }
 
-    newX = Math.max(limits.minX, Math.min(limits.maxX, newX));
-    newZ = Math.max(limits.minZ, Math.min(limits.maxZ, newZ));
+    camera.position.x = Math.max(limits.minX, Math.min(limits.maxX, camera.position.x));
+    camera.position.y = Math.max(limits.minY, Math.min(limits.maxY, camera.position.y));
+    camera.position.z = Math.max(limits.minZ, Math.min(limits.maxZ, camera.position.z));
 
-    camera.position.x = newX;
-    camera.position.z = newZ;
-    
-    camera.rotation.y = yaw;
-    camera.rotation.x = pitch;
+    window.addEventListener('mousemove', (event) => {
+        if (document.pointerLockElement === document.body) {
+            const mouseX = event.movementX;
+            const mouseY = event.movementY;
+
+            yaw -= (mouseX * lookSpeed);
+            pitch -= (mouseY * lookSpeed);
+            pitch = Math.max(-Math.PI / 9, Math.min(Math.PI / 9, pitch));
+
+            camera.rotation.set(pitch, yaw, 0);
+        }
+    });
 
     renderer.render(scene, camera);
 }
-
-window.addEventListener('resize', () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-});
 
 animate();
