@@ -71,23 +71,58 @@ const galleryGroup = new THREE.Group();
 scene.add(galleryGroup);
 
 const paintingPositions = [
-    { x: -6, y: 2.5 },
-    { x: 0, y: 2.5 },
-    { x: 6, y: 2.5 }
+    { x: -6, y: 2.5, z: -9.85 },
+    { x: 0, y: 2.5, z: -9.85 },
+    { x: 6, y: 2.5, z: -9.85 },
+
+    { x: -6, y: 2.5, z: 9.80 },
+    { x: 0, y: 2.5, z: 9.80 },
+    { x: 6, y: 2.5, z: 9.80 },
+
+    { x: -9.85, y: 2.5, z: -6 },
+    { x: -9.85, y: 2.5, z: 0 },
+    { x: -9.85, y: 2.5, z: 6 },
+
+    { x: 9.85, y: 2.5, z: -6 },
+    { x: 9.85, y: 2.5, z: 0 },
+    { x: 9.85, y: 2.5, z: 6 }
 ];
 
-function createPainting(position, texturePath) {
+const paintingTextures = [
+    './img/monalisa.png',
+    './img/monalisa.png',
+    './img/monalisa.png',
+
+    './img/grito.png',
+    './img/grito.png',
+    './img/grito.png',
+
+    './img/abaporu.png',
+    './img/abaporu.png',
+    './img/abaporu.png',
+
+    './img/monalisa.png',
+    './img/monalisa.png',
+    './img/monalisa.png'
+];
+
+function createPainting(position, texturePath, rotationY, prof, auxX) {
     const paintingTexture = new THREE.TextureLoader().load(texturePath, function (texture) {
         const paintingGeometry = new THREE.PlaneGeometry(2, 4);
         const paintingMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
         const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
-        painting.position.set(position.x, position.y, -9.85);
+
+        painting.position.set(position.x, position.y, position.z);
+
+        painting.rotation.y = rotationY;
 
         const frameGeometry = new THREE.BoxGeometry(2.2, 4.2, 0.01);
         const frameMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
         const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-        frame.position.set(position.x, position.y, -9.95);
-
+        
+        frame.position.set(auxX, position.y, position.z - prof);
+        frame.rotation.y = rotationY;
+        
         galleryGroup.add(frame);
         galleryGroup.add(painting);
     }, undefined, function (err) {
@@ -95,13 +130,44 @@ function createPainting(position, texturePath) {
     });
 }
 
-function createSign(text) {
+const paintingRotations = [
+    0,   
+    0,
+    0,    
+
+    Math.PI,
+    Math.PI,
+    Math.PI,
+
+    Math.PI / 2,
+    Math.PI / 2,
+    Math.PI / 2,
+
+    -Math.PI / 2,
+    -Math.PI / 2,  
+    -Math.PI / 2
+];
+
+paintingPositions.forEach((pos, index) => {
+    if(paintingRotations[index] == 0) {
+        createPainting(pos, paintingTextures[index], paintingRotations[index], 0.01, pos.x);
+    } else if(paintingRotations[index] == Math.PI) {
+        createPainting(pos, paintingTextures[index], paintingRotations[index], -0.05, pos.x);
+    }else if(paintingRotations[index] === Math.PI / 2) {
+        createPainting(pos, paintingTextures[index], paintingRotations[index], 0.01, -9.88);
+    }else if(paintingRotations[index] === -Math.PI / 2) {
+        createPainting(pos, paintingTextures[index], paintingRotations[index], 0.01, 9.88);
+    }
+});
+
+
+function createSign(text, position) {
     const group = new THREE.Group();
 
     const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
     const poleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const pole = new THREE.Mesh(poleGeometry, poleMaterial);
-    pole.position.set(0, 1, 0);
+    pole.position.set(position.x, position.y, position.z);
     group.add(pole);
 
     const signGeometry = new THREE.PlaneGeometry(2.5, 1.25);
@@ -133,7 +199,7 @@ function createSign(text) {
     const signTexture = new THREE.CanvasTexture(canvas);
     const signMaterial = new THREE.MeshBasicMaterial({ map: signTexture, side: THREE.DoubleSide });
     const sign = new THREE.Mesh(signGeometry, signMaterial);
-    sign.position.set(0, 1.75, 0.1);
+    sign.position.set(position.x, position.y + 1.75, position.z + 0.1);
 
     sign.rotation.y = Math.PI / 8;
 
@@ -142,35 +208,65 @@ function createSign(text) {
     const baseGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.1, 32);
     const baseMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const base = new THREE.Mesh(baseGeometry, baseMaterial);
-    base.position.set(0, 0, 0);
+    base.position.set(position.x, position.y, position.z);
     group.add(base);
 
     return group;
 }
 
-function createArtSign(title, author, style) {
+function createArtSign(title, author, style, position) {
     const text = `Nome da Obra: ${title}\nAutor: ${author}\nEstilo: ${style}`;
-    return createSign(text);
+    return createSign(text, position);
 }
 
-const sign1 = createArtSign('Mona Lisa', 'Leonardo Da Vinci', 'Renascentista');
-sign1.position.set(-8.3, 0, -9.5);
-scene.add(sign1);
-
-const sign2 = createArtSign('O Grito', 'Edvard Munch', 'Expressionismo');
-sign2.position.set(-2.3, 0, -9.5);
-scene.add(sign2);
-
-const sign3 = createArtSign('Abaporu', 'Tarsila do Amaral', 'Modernismo');
-sign3.position.set(3.7, 0, -9.5);
-scene.add(sign3);
-
-const paintingTextures = [
-    './img/monalisa.png',
-    './img/grito.png',
-    './img/abaporu.png',
-    './img/monalisa.png'
+const artDetailsFront = [
+    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
+    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
+    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' }
 ];
+
+const artDetailsBack = [
+    { title: 'O Grito', author: 'Edvard Munch', style: 'Expressionismo' },
+    { title: 'O Grito', author: 'Edvard Munch', style: 'Expressionismo' },
+    { title: 'O Grito', author: 'Edvard Munch', style: 'Expressionismo' }
+];
+
+const artDetailsLeft = [
+    { title: 'Abaporu', author: 'Tarsila do Amaral', style: 'Modernismo' },
+    { title: 'Abaporu', author: 'Tarsila do Amaral', style: 'Modernismo' },
+    { title: 'Abaporu', author: 'Tarsila do Amaral', style: 'Modernismo' }
+];
+
+const artDetailsRight = [
+    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
+    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
+    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' }
+];
+
+
+artDetailsFront.forEach((art, index) => {
+    const signPosition = { x: -8.3 + (index * 6), y: 0, z: -9.5 };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    scene.add(artSign);
+});
+
+artDetailsBack.forEach((art, index) => {
+    const signPosition = { x: -8.3 + (index * 6), y: 0, z: 9.5 };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    scene.add(artSign);
+});
+
+artDetailsLeft.forEach((art, index) => {
+    const signPosition = { x: -9.5, y: 0, z: -6 + (index * 6) };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    scene.add(artSign);
+});
+
+artDetailsRight.forEach((art, index) => {
+    const signPosition = { x: 9.5, y: 0, z: -6 + (index * 6) };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    scene.add(artSign);
+});
 
 paintingPositions.forEach((pos, index) => {
     createPainting(pos, paintingTextures[index]);
