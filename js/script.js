@@ -90,20 +90,20 @@ const paintingPositions = [
 
 const paintingTextures = [
     './img/monalisa.png',
-    './img/monalisa.png',
-    './img/monalisa.png',
+    './img/hand.jpg',
+    './img/american-gothic-1930.jpeg',
 
     './img/grito.png',
-    './img/grito.png',
-    './img/grito.png',
+    './img/three_vangogh.jpg',
+    './img/hyacinthe.jpeg',
 
     './img/abaporu.png',
-    './img/abaporu.png',
-    './img/abaporu.png',
+    './img/jonathan-buttall.jpg',
+    './img/the-arnolfini.jpg',
 
-    './img/monalisa.png',
-    './img/monalisa.png',
-    './img/monalisa.png'
+    './img/Pearl_Earring.jpg',
+    './img/ytho.jpg',
+    './img/The_Madonna.jpg'
 ];
 
 function createPainting(position, texturePath, rotationY, prof, auxX) {
@@ -221,26 +221,26 @@ function createArtSign(title, author, style, position) {
 
 const artDetailsFront = [
     { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
-    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
-    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' }
+    { title: 'The Village Politicians', author: 'John L. Krimmel', style: 'Renascentista' },
+    { title: 'American Gothic (1930)', author: 'Grant Wood', style: 'Regionalismo' }
 ];
 
 const artDetailsBack = [
     { title: 'O Grito', author: 'Edvard Munch', style: 'Expressionismo' },
-    { title: 'O Grito', author: 'Edvard Munch', style: 'Expressionismo' },
-    { title: 'O Grito', author: 'Edvard Munch', style: 'Expressionismo' }
+    { title: 'Almond Blossom ', author: 'Vincent Van Gogh', style: 'Pós-impressionismo' },
+    { title: 'Portrait of Louis XIV (1701)', author: 'Hyacinthe Rigaud', style: 'Barroco' }
 ];
 
 const artDetailsLeft = [
     { title: 'Abaporu', author: 'Tarsila do Amaral', style: 'Modernismo' },
-    { title: 'Abaporu', author: 'Tarsila do Amaral', style: 'Modernismo' },
-    { title: 'Abaporu', author: 'Tarsila do Amaral', style: 'Modernismo' }
+    { title: 'The Blue Boy (1770)', author: 'Thomas Gainsborough', style: 'Rococo' },
+    { title: 'The Arnolfini Portrait (1434)', author: 'Jan van Eyck', style: 'Early Netherlandish' }
 ];
 
 const artDetailsRight = [
-    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
-    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' },
-    { title: 'Mona Lisa', author: 'Leonardo Da Vinci', style: 'Renascentista' }
+    { title: 'The Girl with a Pearl Earring (1665)', author: 'Johannes Vermeer', style: 'Tronie' },
+    { title: 'Pope Leo X (after Raphael) - 1964', author: 'Fernando Botero', style: '-' },
+    { title: 'The Madonna Litta by Leonardo da Vinci (1491) ', author: 'Leonardo Da Vinci', style: 'Renascentista' }
 ];
 
 
@@ -263,7 +263,7 @@ artDetailsLeft.forEach((art, index) => {
 });
 
 artDetailsRight.forEach((art, index) => {
-    const signPosition = { x: 9.5, y: 0, z: -6 + (index * 6) };
+    const signPosition = { x: 9, y: 0, z: -6 + (index * 6) };
     const artSign = createArtSign(art.title, art.author, art.style, signPosition);
     scene.add(artSign);
 });
@@ -274,8 +274,8 @@ paintingPositions.forEach((pos, index) => {
 
 camera.position.set(0, 1.6, 5);
 
-const moveSpeed = 0.05;
-const lookSpeed = 0.000005;
+const moveSpeed = 0.3;
+const lookSpeed = 0.00002;
 
 let moveForward = false;    
 let moveBackward = false;
