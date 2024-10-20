@@ -274,8 +274,8 @@ paintingPositions.forEach((pos, index) => {
 
 camera.position.set(0, 1.6, 5);
 
-const moveSpeed = 0.3;
-const lookSpeed = 0.00002;
+const moveSpeed = 0.1;
+const lookSpeed = 0.00001;
 
 let moveForward = false;    
 let moveBackward = false;
