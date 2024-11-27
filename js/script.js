@@ -161,10 +161,10 @@ paintingPositions.forEach((pos, index) => {
 });
 
 
-function createSign(text, position) {
+function createSign(text, position, postionRelative) {
     const group = new THREE.Group();
 
-    const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 32);
+    const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2.5, 32);
     const poleMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const pole = new THREE.Mesh(poleGeometry, poleMaterial);
     pole.position.set(position.x, position.y, position.z);
@@ -201,7 +201,16 @@ function createSign(text, position) {
     const sign = new THREE.Mesh(signGeometry, signMaterial);
     sign.position.set(position.x, position.y + 1.75, position.z + 0.1);
 
-    sign.rotation.y = Math.PI / 8;
+
+    if(postionRelative == 'Front') {
+        sign.rotation.y = Math.PI / 18;
+    }else if(postionRelative == 'Back') {
+        sign.rotation.y = 3.35;
+    }else if(postionRelative == 'Left') {
+        sign.rotation.y = 1.85;
+    }else if(postionRelative == 'Right') {
+        sign.rotation.y = -7.58 ;
+    }
 
     group.add(sign);
 
@@ -214,9 +223,9 @@ function createSign(text, position) {
     return group;
 }
 
-function createArtSign(title, author, style, position) {
+function createArtSign(title, author, style, position, postionRelative) {
     const text = `Nome da Obra: ${title}\nAutor: ${author}\nEstilo: ${style}`;
-    return createSign(text, position);
+    return createSign(text, position, postionRelative);
 }
 
 const artDetailsFront = [
@@ -245,26 +254,26 @@ const artDetailsRight = [
 
 
 artDetailsFront.forEach((art, index) => {
-    const signPosition = { x: -8.3 + (index * 6), y: 0, z: -9.5 };
-    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    const signPosition = { x: -8.5 + (index * 6), y: 0, z: -9.5 };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition, "Front");
     scene.add(artSign);
 });
 
 artDetailsBack.forEach((art, index) => {
-    const signPosition = { x: -8.3 + (index * 6), y: 0, z: 9.5 };
-    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    const signPosition = { x: -3.6 + (index * 6), y: 0, z: 9.5 };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition, "Back");
     scene.add(artSign);
 });
 
 artDetailsLeft.forEach((art, index) => {
-    const signPosition = { x: -9.5, y: 0, z: -6 + (index * 6) };
-    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    const signPosition = { x: -9.5, y: 0, z: -3.74 + (index * 6) };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition, "Left");
     scene.add(artSign);
 });
 
 artDetailsRight.forEach((art, index) => {
-    const signPosition = { x: 9, y: 0, z: -6 + (index * 6) };
-    const artSign = createArtSign(art.title, art.author, art.style, signPosition);
+    const signPosition = { x: 9, y: 0, z: -8.4 + (index * 6) };
+    const artSign = createArtSign(art.title, art.author, art.style, signPosition, "Right");
     scene.add(artSign);
 });
 
