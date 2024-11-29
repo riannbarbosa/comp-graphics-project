@@ -379,17 +379,22 @@ function animate() {
     camera.position.y = Math.max(limits.minY, Math.min(limits.maxY, camera.position.y));
     camera.position.z = Math.max(limits.minZ, Math.min(limits.maxZ, camera.position.z));
 
+      // Camera Rotation for first person vision
     window.addEventListener('mousemove', (event) => {
-        if (document.pointerLockElement === document.body) {
-            const mouseX = event.movementX;
-            const mouseY = event.movementY;
+    if (document.pointerLockElement === document.body) {
+        const mouseX = event.movementX;
+        const mouseY = event.movementY;
 
-            yaw -= (mouseX * lookSpeed);
-            pitch -= (mouseY * lookSpeed);
-            pitch = Math.max(-Math.PI / 9, Math.min(Math.PI / 9, pitch));
+        yaw -= mouseX * lookSpeed;
+        pitch -= mouseY * lookSpeed;
 
-            camera.rotation.set(pitch, yaw, 0);
-        }
+        // Clamp pitch to prevent flipping
+        pitch = Math.max(-Math.PI / 9, Math.min(Math.PI / 9, pitch));
+
+        // Use Euler to avoid gimbal lock
+        const euler = new THREE.Euler(pitch, yaw, 0, 'YXZ');
+        camera.quaternion.setFromEuler(euler);
+    }
     });
 
     renderer.render(scene, camera);
